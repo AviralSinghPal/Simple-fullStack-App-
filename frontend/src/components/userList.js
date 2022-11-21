@@ -1,6 +1,50 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
+import axios from "axios"
 
 export const UserList = () => {
+    const [userData, setUserData] = useState(null);
+
+    const fetchUserData = async() =>{
+      const resp = await axios.get("/getUser");
+      console.log(resp);
+
+      if(resp.data.users.length > 0){
+        setUserData(resp.data.users);
+      }
+    };
+// it is a good practice to keep async await out of useEffect.(thats why we have explicitly written fetchUserData )
+    useEffect(()=>{
+      fetchUserData();
+    }, [userData])
+
+    //handling edit ops
+    const handleEdit = async (user) =>{
+      const userName = prompt("Enter your new Name");
+      const userEmail = prompt("Enter your new Mail ")
+      
+      if(!userName || !userEmail)
+      {
+        alert("Please enter username and Email Both")
+      }
+      else {
+        const resp = await axios.put(`/editUser/${user._id}`,{
+          name: userName,
+          email: userEmail
+        });
+        console.log(resp);
+      }
+        
+    
+    };
+
+    //Delete
+
+    const handleDelete = async(userId)=>{
+      const resp = await axios.delete(`/deleteUser/${userId}`);
+      console.log(resp);
+    } 
+
+
     return <div>  <section className="text-gray-600 body-font">
     <div className="container px-5 py-24 mx-auto">
       <div className="flex flex-col text-center w-full mb-8">
@@ -27,16 +71,23 @@ export const UserList = () => {
             </tr>
           </thead>
           <tbody>
+            {userData && userData.map((user)=>(
             <tr>
-              <td className="px-4 py-3">One</td>
-              <td className="px-4 py-3">Two</td>
+              <td className="px-4 py-3">{user.name}</td>
+              <td className="px-4 py-3">{user.email}</td>
               <td className="px-4 py-3">
-                <button className="hover:text-green-500">Edit</button>
+                <button className="hover:text-green-500"
+                onClick={()=>handleEdit(user)}
+                >Edit</button>
               </td>
               <td className="px-4 py-3 text-lg text-gray-900">
-                <button className="hover:text-red-500">Delete</button>
+                <button className="hover:text-red-500"
+                onClick={()=>handleDelete(user._id)}
+                >Delete</button>
               </td>
             </tr>
+            ))}
+            
           </tbody>
         </table>
       </div>

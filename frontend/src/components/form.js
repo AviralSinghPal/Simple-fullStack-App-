@@ -1,7 +1,32 @@
-import React from "react"
-
+import React, { useState } from "react"
+import axios from "axios"
 export const Form = () => {
-    return <div>  <form>
+
+    const [userName, setUserName] = useState("");
+    const [userEmail, setUserEmail] = useState("");
+    console.log(userName,userEmail);
+
+    const submitData=async()=>{
+        const data = {
+            name: userName,
+            email: userEmail
+        }
+        const res = await axios.post("/createUser",data);
+        console.log(res);
+    }
+
+
+
+// to handle default refresh which happens when we click submit
+    const handleSubmit=(event)=>{
+        event.preventDefault();
+        //to submmit data
+        submitData();
+        //EMpty the previous details
+        setUserEmail("");
+        setUserName("");
+    }
+    return <div>  <form onSubmit={handleSubmit}>
     <section className="text-gray-600 body-font relative">
       <div className="container px-5 py-8 mx-auto">
         <div className="flex flex-col text-center w-full mb-6">
@@ -24,6 +49,9 @@ export const Form = () => {
                   id="name"
                   name="name"
                   className="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+                  value={userName}
+                  onChange={(event)=> setUserName(event.target.value)}
+
                 />
               </div>
             </div>
@@ -40,6 +68,8 @@ export const Form = () => {
                   id="email"
                   name="email"
                   className="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+                  value={userEmail}
+                  onChange={(event)=> setUserEmail(event.target.value)}
                 />
               </div>
             </div>
